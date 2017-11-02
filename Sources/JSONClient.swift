@@ -28,7 +28,7 @@ open class JSONClient {
 	}
 	
 	open func performRequest(method: HTTP.Method = .get,
-	                         pathComponents components: [String] = [],
+	                         path components: [String] = [],
 	                         query: [String: CustomStringConvertible] = [:],
 	                         headers: [HeaderKey: String] = [:],
 	                         body: ContentBody = .empty) throws -> JSON {
