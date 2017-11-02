@@ -33,9 +33,10 @@ open class JSONClient {
 	                         headers: [HeaderKey: String] = [:],
 	                         body: ContentBody = .empty) throws -> JSON {
 		
-		guard let uri = ([baseUrl] + components).joined(separator: "/").addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) else {
+		guard let path = components.joined(separator: "/").addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) else {
 			throw Error.invalidURL
 		}
+		let uri = [baseUrl, path].joined(separator: "/")
 		
 		var requestHeaders = self.headers()
 		headers.forEach { requestHeaders[$0.key] = $0.value }
