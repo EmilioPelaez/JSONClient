@@ -1,9 +1,9 @@
+// swift-tools-version:4.0
 import PackageDescription
 
-let package = Package(
-	name: "JSONClient",
-	dependencies: [
-		.Package(url: "https://github.com/vapor/vapor.git", majorVersion: 2)
-	],
-	exclude: []
+let name = "JSONClient"
+let package = Package(name: name,
+                      products: [.library(name: name, targets: [name])],
+                      dependencies: [.package(url: "https://github.com/vapor/vapor.git", .upToNextMajor(from: "2.0.0"))],
+                      targets: [.target(name: name, dependencies: ["Vapor"], path: "Sources")]
 )
