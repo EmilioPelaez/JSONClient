@@ -15,6 +15,8 @@ open class JSONClient {
 	public let baseUrl: String
 	public let client: Responder
 	
+	public var jsonDecoder = JSONDecoder()
+	
 	public enum Error: Swift.Error {
 		case invalidResponse
 		case invalidURL
@@ -27,12 +29,31 @@ open class JSONClient {
 		self.client = client
 	}
 	
-	open func performRequest(method: HTTP.Method = .get,
-	                         path components: [String] = [],
-	                         query: [String: CustomStringConvertible] = [:],
-	                         headers: [HeaderKey: String] = [:],
-	                         body: ContentBody = .empty) throws -> JSON {
-		
+	open func performDecodableRequest<T: Decodable>(method: HTTP.Method = .get,
+	                                                path components: [String] = [],
+	                                                query: [String: CustomStringConvertible] = [:],
+	                                                headers: [HeaderKey: String] = [:],
+	                                                body: ContentBody = .empty,
+	                                                decoder: JSONDecoder? = nil) throws -> T {
+		let data = try performDataRequest(method: method, path: components, query: query, headers: headers, body: body)
+		return try (decoder ?? jsonDecoder).decode(T.self, from: data)
+	}
+	
+	@discardableResult
+	open func performJSONRequest(method: HTTP.Method = .get,
+	                             path components: [String] = [],
+	                             query: [String: CustomStringConvertible] = [:],
+	                             headers: [HeaderKey: String] = [:],
+	                             body: ContentBody = .empty) throws -> JSON {
+		let data = try performDataRequest(method: method, path: components, query: query, headers: headers, body: body)
+		return try JSON(bytes: data.makeBytes())
+	}
+	
+	private func performDataRequest(method: HTTP.Method = .get,
+	                             path components: [String] = [],
+	                             query: [String: CustomStringConvertible] = [:],
+	                             headers: [HeaderKey: String] = [:],
+	                             body: ContentBody = .empty) throws -> Data {
 		guard let path = components.joined(separator: "/").addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) else {
 			throw Error.invalidURL
 		}
@@ -48,7 +69,7 @@ open class JSONClient {
 		}
 		let response = try client.respond(to: request)
 		switch response.body {
-		case .data(let bytes): return try JSON(bytes: bytes)
+		case .data(let bytes): return Data(bytes: bytes)
 		case _: throw Error.invalidResponse
 		}
 	}
