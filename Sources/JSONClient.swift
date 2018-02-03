@@ -30,30 +30,30 @@ open class JSONClient {
 	}
 	
 	open func performDecodableRequest<T: Decodable>(method: HTTP.Method = .get,
-	                                                path components: [String] = [],
-	                                                query: [String: CustomStringConvertible] = [:],
-	                                                headers: [HeaderKey: String] = [:],
-	                                                body: ContentBody = .empty,
-	                                                decoder: JSONDecoder? = nil) throws -> T {
+																									path components: [String] = [],
+																									query: [String: CustomStringConvertible] = [:],
+																									headers: [HeaderKey: String] = [:],
+																									body: ContentBody = .empty,
+																									decoder: JSONDecoder? = nil) throws -> T {
 		let data = try performDataRequest(method: method, path: components, query: query, headers: headers, body: body)
 		return try (decoder ?? jsonDecoder).decode(T.self, from: data)
 	}
 	
 	@discardableResult
 	open func performJSONRequest(method: HTTP.Method = .get,
-	                             path components: [String] = [],
-	                             query: [String: CustomStringConvertible] = [:],
-	                             headers: [HeaderKey: String] = [:],
-	                             body: ContentBody = .empty) throws -> JSON {
+															 path components: [String] = [],
+															 query: [String: CustomStringConvertible] = [:],
+															 headers: [HeaderKey: String] = [:],
+															 body: ContentBody = .empty) throws -> JSON {
 		let data = try performDataRequest(method: method, path: components, query: query, headers: headers, body: body)
 		return try JSON(bytes: data.makeBytes())
 	}
 	
 	private func performDataRequest(method: HTTP.Method = .get,
-	                             path components: [String] = [],
-	                             query: [String: CustomStringConvertible] = [:],
-	                             headers: [HeaderKey: String] = [:],
-	                             body: ContentBody = .empty) throws -> Data {
+																	path components: [String] = [],
+																	query: [String: CustomStringConvertible] = [:],
+																	headers: [HeaderKey: String] = [:],
+																	body: ContentBody = .empty) throws -> Data {
 		guard let path = components.joined(separator: "/").addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) else {
 			throw Error.invalidURL
 		}
@@ -62,6 +62,8 @@ open class JSONClient {
 		var requestHeaders = self.headers()
 		headers.forEach { requestHeaders[$0.key] = $0.value }
 		requestHeaders["Content-Type"] = body.contentType.description
+		
+		print(requestHeaders)
 		
 		let request = Request(method: method, uri: uri, headers: requestHeaders, body: body.content.makeBody())
 		if !query.isEmpty {
@@ -74,3 +76,4 @@ open class JSONClient {
 		}
 	}
 }
+

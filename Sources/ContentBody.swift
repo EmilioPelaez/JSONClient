@@ -20,7 +20,7 @@ public struct ContentBody {
 	public let contentType: ContentType
 	public let content: BodyRepresentable
 	
-	public static let empty = ContentBody(contentType: .textPlain, content: HTTP.Body.data([]))
+	public static let empty = ContentBody(contentType: .textPlain, content: Body.data([]))
 	
 	public init(contentType: ContentType, content: BodyRepresentable) {
 		self.contentType = contentType
@@ -34,6 +34,11 @@ public struct ContentBody {
 	public init(plainText: String) {
 		self.init(contentType: .textPlain, content: plainText)
 	}
+	
+	public init<T: Encodable>(object: T, encoder: JSONEncoder = JSONEncoder()) throws {
+		let data = try encoder.encode(object)
+		self.init(contentType: .applicationJson, content: Body.data(data.makeBytes()))
+	}
 }
 
 
@@ -46,3 +51,4 @@ extension ContentBody.ContentType: CustomStringConvertible {
 		}
 	}
 }
+
