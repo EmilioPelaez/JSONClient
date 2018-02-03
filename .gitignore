@@ -67,3 +67,4 @@ fastlane/screenshots
 fastlane/test_output
 /Package.resolved
 /JSONClient.xcodeproj
+.DS_Store
