@@ -63,8 +63,6 @@ open class JSONClient {
 		headers.forEach { requestHeaders[$0.key] = $0.value }
 		requestHeaders["Content-Type"] = body.contentType.description
 		
-		print(requestHeaders)
-		
 		let request = Request(method: method, uri: uri, headers: requestHeaders, body: body.content.makeBody())
 		if !query.isEmpty {
 			request.formURLEncoded = try Node(node: query)
